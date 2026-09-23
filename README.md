@@ -114,7 +114,7 @@ curl -X POST http://localhost:4000/ingest/trigger
 
 | Component | Suggested platform | Notes |
 |---|---|---|
-| Frontend | Vercel | Set `NEXT_PUBLIC_API_BASE` to the deployed backend URL |
+| Frontend | Netlify | Set `NEXT_PUBLIC_API_BASE` to the deployed backend URL |
 | Backend API | Render / Railway | Set `CORS_ORIGIN` to the deployed frontend URL |
 | Python pipeline | GitHub Actions cron, or triggered on-demand via the Node API | `POST /ingest/trigger` already spawns it as a subprocess, so on Render/Railway this works out of the box as long as Python is available on the same instance as the backend |
 | Database | Persistent disk on Render/Railway (SQLite file), or swap to hosted Postgres | This repo ships with SQLite for simplicity; swapping `better-sqlite3`/`sqlite3` for a Postgres client is the main change needed to move to a hosted DB |
