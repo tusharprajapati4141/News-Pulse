@@ -112,14 +112,17 @@ curl -X POST http://localhost:4000/ingest/trigger
 
 ## Deployment
 
-| Component | Suggested platform | Notes |
+| Component | Platform used | Notes |
 |---|---|---|
-| Frontend | Netlify | Set `NEXT_PUBLIC_API_BASE` to the deployed backend URL |
-| Backend API | Render / Railway | Set `CORS_ORIGIN` to the deployed frontend URL |
-| Python pipeline | GitHub Actions cron, or triggered on-demand via the Node API | `POST /ingest/trigger` already spawns it as a subprocess, so on Render/Railway this works out of the box as long as Python is available on the same instance as the backend |
-| Database | Persistent disk on Render/Railway (SQLite file), or swap to hosted Postgres | This repo ships with SQLite for simplicity; swapping `better-sqlite3`/`sqlite3` for a Postgres client is the main change needed to move to a hosted DB |
+| Frontend | Netlify | `netlify.toml` configures the Next.js runtime plugin; set `NEXT_PUBLIC_API_BASE` to the deployed backend URL |
+| Backend API + Python pipeline | Render (Docker Web Service) | Built from the root `Dockerfile`, which installs **both Node and Python** in one image — this is what lets `POST /ingest/trigger` actually run the scraper live, not just locally |
+| Database | SQLite file inside the same Render service | Ships pre-populated so the demo has data immediately; `Refresh Data` overwrites/extends it live |
 
-Deploying live (Vercel/Render accounts, env vars in each dashboard) is an account-specific
+**Why Docker instead of Render's plain Node runtime:** Render's default Node web service doesn't include Python, so a Node-only deploy can serve `/clusters` and `/timeline` but `POST /ingest/trigger` silently fails (the `python3` subprocess has nothing to run). The `Dockerfile` at the repo root installs `python3` + the scraper's pip dependencies alongside Node, so the exact same ingestion pipeline that runs locally also runs on the deployed service.
+
+To deploy the backend this way on Render: **New → Web Service → select this repo → Render auto-detects the `Dockerfile` at the root** (no need to set a build/start command manually — the Dockerfile's `CMD` handles it). Set the same environment variables as local (`CORS_ORIGIN`, `DB_PATH`, `PYTHON_BIN=python3`, `SCRAPER_SCRIPT`).
+
+Deploying live (Netlify/Render accounts, env vars in each dashboard) is an account-specific
 step for whoever submits this — the code above is ready to deploy as-is once those
 accounts exist; there is nothing hardcoded that blocks it (no secrets, no hardcoded URLs).
 
