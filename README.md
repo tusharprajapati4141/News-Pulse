@@ -126,6 +126,10 @@ Deploying live (Netlify/Render accounts, env vars in each dashboard) is an accou
 step for whoever submits this — the code above is ready to deploy as-is once those
 accounts exist; there is nothing hardcoded that blocks it (no secrets, no hardcoded URLs).
 
+## Live URL
+   Live frontend: https://newspulseee.netlify.app
+   Live backend: https://news-pulse-8fwc.onrender.com
+
 ## Assumptions made
 
 - "At least three RSS feeds" → used exactly three general-news feeds (see above) rather
